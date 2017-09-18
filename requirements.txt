@@ -1,2 +1,2 @@
--e git+https://github.com/bryant1410/krippendorff-alpha.git@f9d1b6d#egg=krippendorff-alpha
+-e git+https://github.com/grrrr/krippendorff-alpha.git@ff2d04d#egg=krippendorff-alpha
 numpy

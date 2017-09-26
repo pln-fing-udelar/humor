@@ -1,28 +1,25 @@
 #!/usr/bin/env python
-import collections
 import csv
 
-import krippendorff_alpha
+import krippendorff
+import numpy as np
 
 
 def main():
-    annotators_humor = collections.defaultdict(dict)
-    annotators_funniness = collections.defaultdict(dict)
+    humor_counts = []
+    funniness_counts = []
+    with open('annotations_by_tweet.csv') as file_:
+        reader = csv.reader(file_)
+        next(reader)
+        for _, _, _, x_str, v1_str, v2_str, v3_str, v4_str, v5_str in reader:
+            x, v1, v2, v3, v4, v5 = int(x_str), int(v1_str), int(v2_str), int(v3_str), int(v4_str), int(v5_str)
+            humor_counts.append([x, v1 + v2 + v3 + v4 + v5])
+            funniness_counts.append([v1, v2, v3, v4, v5])
 
-    with open('annotations.csv') as file_:
-        for tweet_id, annotator_id, tag in csv.reader(file_):
-            if tag in ['1', '2', '3', '4', '5', 'x']:
-                annotators_humor[annotator_id][tweet_id] = tag != 'x'
-                if tag != 'x':
-                    annotators_funniness[annotator_id][tweet_id] = float(tag)
-
-    humor_alpha = krippendorff_alpha.krippendorff_alpha(annotators_humor.values(),
-                                                        metric=krippendorff_alpha.nominal_metric,
-                                                        convert_items=bool)
-    funniness_alpha = krippendorff_alpha.krippendorff_alpha(annotators_funniness.values())
-
-    print(f"alpha for humor: ${humor_alpha}")
-    print(f"alpha for funniness: ${funniness_alpha}")
+    humor_counts = np.array(humor_counts)
+    funniness_counts = np.array(funniness_counts)
+    print("alpha for humor: ", krippendorff.alpha(humor_counts, level_of_measurement='nominal'))
+    print("alpha for funniness: ", krippendorff.alpha(funniness_counts))
 
 
 if __name__ == '__main__':

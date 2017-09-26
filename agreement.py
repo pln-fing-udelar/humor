@@ -12,13 +12,13 @@ def main():
     with open('annotations.csv') as file_:
         for tweet_id, annotator_id, tag in csv.reader(file_):
             if tag in ['1', '2', '3', '4', '5', 'x']:
-                annotators_humor[annotator_id][tweet_id] = 'h' if tag != 'x' else tag
+                annotators_humor[annotator_id][tweet_id] = tag != 'x'
                 if tag != 'x':
                     annotators_funniness[annotator_id][tweet_id] = float(tag)
 
     humor_alpha = krippendorff_alpha.krippendorff_alpha(annotators_humor.values(),
                                                         metric=krippendorff_alpha.nominal_metric,
-                                                        convert_items=str)
+                                                        convert_items=bool)
     funniness_alpha = krippendorff_alpha.krippendorff_alpha(annotators_funniness.values())
 
     print(f"alpha for humor: ${humor_alpha}")

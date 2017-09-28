@@ -20,6 +20,7 @@ def main():
     funniness_counts = np.array(funniness_counts)
     print("alpha for humor: ", krippendorff.alpha(humor_counts, level_of_measurement='nominal'))
     print("alpha for funniness: ", krippendorff.alpha(funniness_counts))
+    print("alpha for funniness as ordinal: ", krippendorff.alpha(funniness_counts, level_of_measurement='ordinal'))
 
 
 if __name__ == '__main__':

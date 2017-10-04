@@ -21,6 +21,7 @@ def main():
     print("alpha for humor: ", krippendorff.alpha(humor_counts, level_of_measurement='nominal'))
     print("alpha for funniness: ", krippendorff.alpha(funniness_counts))
     print("alpha for funniness as ordinal: ", krippendorff.alpha(funniness_counts, level_of_measurement='ordinal'))
+    print("alpha for funniness as ratio: ", krippendorff.alpha(funniness_counts, level_of_measurement='ratio', value_domain=[1, 2, 3, 4, 5]))
 
 
 if __name__ == '__main__':

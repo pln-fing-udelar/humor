@@ -18,10 +18,10 @@ def main():
 
     humor_counts = np.array(humor_counts)
     funniness_counts = np.array(funniness_counts)
-    print("alpha for humor: ", krippendorff.alpha(humor_counts, level_of_measurement='nominal'))
-    print("alpha for funniness: ", krippendorff.alpha(funniness_counts))
-    print("alpha for funniness as ordinal: ", krippendorff.alpha(funniness_counts, level_of_measurement='ordinal'))
-    print("alpha for funniness as ratio: ", krippendorff.alpha(funniness_counts, level_of_measurement='ratio', value_domain=[1, 2, 3, 4, 5]))
+    print("alpha for humor: ", krippendorff.alpha(value_counts=humor_counts, level_of_measurement='nominal'))
+    print("alpha for funniness: ", krippendorff.alpha(value_counts=funniness_counts))
+    print("alpha for funniness as ordinal: ", krippendorff.alpha(value_counts=funniness_counts, level_of_measurement='ordinal'))
+    print("alpha for funniness as ratio: ", krippendorff.alpha(value_counts=funniness_counts, level_of_measurement='ratio', value_domain=[1, 2, 3, 4, 5]))
 
 
 if __name__ == '__main__':

@@ -14,8 +14,8 @@ ipython = "*"
 
 krippendorff = ">=0.2.1"
 numpy = "*"
-tweepy = "*"
 python-dotenv = "*"
+tweepy = "*"
 
 
 [requires]

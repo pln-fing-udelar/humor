@@ -15,7 +15,7 @@ def insert_accounts(db, account_ids):
 def insert_tweets(db, tweets):
     cursor = db.cursor()
     cursor.executemany('INSERT INTO tweets (tweet_id, text, account_id, origin, lang)'
-                       ' VALUES (%(id)s, %(text)s, %(user_id)s, "hose", %(lang)s)',
+                       ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', %(lang)s)',
                        tweets)
 
 
@@ -32,7 +32,7 @@ def main():
 
     db = MySQLdb.connect(host=os.getenv('DB_HOST'), user=os.getenv('DB_USER'),
                          password=os.getenv('MYSQL_ROOT_PASSWORD'),
-                         database=os.getenv('DB_NAME'), charset='utf8')
+                         database=os.getenv('DB_NAME'), charset='utf8mb4')
 
     insert_accounts(db, {tweet['user_id'] for tweet in tweets})
     

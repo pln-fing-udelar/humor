@@ -7,16 +7,13 @@ name = "pypi"
 
 [dev-packages]
 
-ipython = "*"
-
 
 [packages]
 
 krippendorff = ">=0.2.1"
-numpy = "*"
-python-dotenv = "*"
-tweepy = "*"
 mysqlclient = "*"
+numpy = "*"
+tweepy = "*"
 
 
 [requires]

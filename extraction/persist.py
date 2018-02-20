@@ -8,15 +8,19 @@ import util
 
 
 def insert_accounts(db, account_ids):
-    cursor = db.cursor()
-    cursor.executemany('INSERT INTO accounts (account_id) VALUES (%s)', account_ids)
+    with db.cursor() as cursor:
+        cursor.executemany('INSERT INTO accounts (account_id) VALUES (%s)'
+                           ' ON DUPLICATE KEY UPDATE account_id = account_id;',
+                           account_ids)
 
 
 def insert_tweets(db, tweets):
-    cursor = db.cursor()
-    cursor.executemany('INSERT INTO tweets (tweet_id, text, account_id, origin, lang)'
-                       ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', %(lang)s)',
-                       tweets)
+    with db.cursor() as cursor:
+        # Consider that there are duplicate tweets in sample sometimes.
+        cursor.executemany('INSERT INTO tweets (tweet_id, text, account_id, origin, lang)'
+                           ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', %(lang)s)'
+                           ' ON DUPLICATE KEY UPDATE tweet_id = tweet_id',
+                           tweets)
 
 
 def main():
@@ -34,9 +38,13 @@ def main():
                          password=os.getenv('MYSQL_ROOT_PASSWORD'),
                          database=os.getenv('DB_NAME'), charset='utf8mb4')
 
-    insert_accounts(db, {tweet['user_id'] for tweet in tweets})
-    
-    insert_tweets(db, tweets)
+    try:
+        insert_accounts(db, {tweet['user_id'] for tweet in tweets})
+        insert_tweets(db, tweets)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
 
 
 if __name__ == '__main__':

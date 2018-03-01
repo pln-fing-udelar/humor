@@ -8,12 +8,14 @@ name = "pypi"
 [dev-packages]
 
 
+
 [packages]
 
 krippendorff = ">=0.2.1"
 mysqlclient = "*"
 numpy = "*"
 tweepy = "*"
+tqdm = "*"
 
 
 [requires]

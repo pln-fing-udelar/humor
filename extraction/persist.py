@@ -18,21 +18,24 @@ def insert_tweets(db, tweets):
     with db.cursor() as cursor:
         # Consider that there are duplicate tweets in sample sometimes.
         cursor.executemany('INSERT INTO tweets (tweet_id, text, account_id, origin, lang)'
-                           ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', %(lang)s)'
+                           ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', \'es\')'
                            ' ON DUPLICATE KEY UPDATE tweet_id = tweet_id',
                            tweets)
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--language', default='es', help="language of the tweets to extract (default: es)")
-    parser.add_argument('file', nargs='?', help="file to load (default: stdin)")
-    args = parser.parse_args()
+    # The args (language and origin) are being hardcoded right now.
+
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument('--language', default='es', help="language of the tweets to extract (default: es)")
+    # parser.add_argument('origin', choices=['hose', 'humorous account'], help="origin of the tweets")
+    # parser.add_argument('file', nargs='?', help="file to load (default: stdin)")
+    # args = parser.parse_args()
 
     tweets = util.read_tweets_from_input()
 
-    for tweet in tweets:
-        tweet['lang'] = args.language
+    # for tweet in tweets:
+    #     tweet['lang'] = args.language
 
     db = MySQLdb.connect(host=os.getenv('DB_HOST'), user=os.getenv('DB_USER'),
                          password=os.getenv('MYSQL_ROOT_PASSWORD'),

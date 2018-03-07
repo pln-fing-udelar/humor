@@ -20,7 +20,7 @@ SCREEN_NAMES = [
     'asaoyvino',
     'BuenasPhrases',
     'BuenosChistes21',
-    'carolalvo',
+    'CarolAlvo',
     'CausandoRisas',
     'ChisteLoco',
     'CHISTEPIN',
@@ -73,8 +73,8 @@ def max_obtainable_status_count_per_user():
     result = {}
 
     user_api = util.tweepy_api(app_only_auth=True)
-    for screen_name in util.chunks(SCREEN_NAMES, MAX_STATUSES_COUNT_PER_USER_AUTH_USERS_LOOKUP_REQUEST):
-        users = user_api.lookup_users(screen_names=screen_name, include_entities=False)
+    for screen_names in util.chunks(SCREEN_NAMES, MAX_STATUSES_COUNT_PER_USER_AUTH_USERS_LOOKUP_REQUEST):
+        users = user_api.lookup_users(screen_names=screen_names, include_entities=False)
 
         result.update((user.screen_name, min(user.statuses_count, MAX_STATUSES_COUNT_PER_USER_TIMELINE))
                       for user in users)
@@ -86,6 +86,9 @@ def max_obtainable_status_count_per_user():
 
 def main():
     status_count_per_user = max_obtainable_status_count_per_user()
+
+    assert all(screen_name in status_count_per_user.keys() for screen_name in SCREEN_NAMES)
+
     status_count = sum(count for count in status_count_per_user.values())
 
     app_api = util.tweepy_api(app_only_auth=True)

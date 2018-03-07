@@ -3,7 +3,7 @@ import random
 
 from extraction import util
 
-LIMIT = 10000
+LIMIT = 12000
 
 
 def main():

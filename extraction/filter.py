@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import random
 
-from extraction import util
+import util
 
 LIMIT = 12000
 

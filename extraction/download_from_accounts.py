@@ -41,7 +41,7 @@ SCREEN_NAMES = [
     'Esepinchewey',
     'GonCuriel',
     'GretchenZanders',
-    'hiletrado',
+    # 'hiletrado',  # Suspended account
     'hum0rdenoche',
     'Hum0rROJO',
     'Humor_Medicos',
@@ -64,7 +64,7 @@ SCREEN_NAMES = [
     'SomosSarcasmo',
     'todochistes',
     'Un_huevo_',
-    'WillyWonkaDice',
+    # 'WillyWonkaDice',  # Suspended account
     'ZonaDeRisas',
 ]
 
@@ -87,7 +87,9 @@ def max_obtainable_status_count_per_user():
 def main():
     status_count_per_user = max_obtainable_status_count_per_user()
 
-    assert all(screen_name in status_count_per_user.keys() for screen_name in SCREEN_NAMES)
+    assert all(screen_name in status_count_per_user.keys() for screen_name in SCREEN_NAMES),\
+        f"The following account names do not match when extracted:" \
+        f" {[screen_name for screen_name in SCREEN_NAMES if screen_name not in status_count_per_user.keys()]}"
 
     status_count = sum(count for count in status_count_per_user.values())
 

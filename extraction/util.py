@@ -9,7 +9,11 @@ RE_LINK = re.compile(r'https?://')
 
 
 def read_tweets_from_input():
-    return [eval(line) for line in fileinput.input()]
+    return read_tweets(fileinput.input())
+
+
+def read_tweets(file):
+    return [eval(line) for line in file]
 
 
 def status_is_retweet(status):

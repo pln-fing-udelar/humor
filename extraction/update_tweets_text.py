@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import argparse
 import time
 
 from tqdm import tqdm
@@ -12,35 +13,40 @@ MAX_STATUSES_COUNT_PER_STATUSES_LOOKUP = 100
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--cached', help="file with the tweets already downloaded")
+    args = parser.parse_args()
+
     connection = util.connection()
     try:
         with connection as cursor:
             cursor.execute('SELECT tweet_id, text FROM tweets')
-            tweets_in_db = [{'id': t[0], 'text': t[1]} for t in cursor.fetchall()]
+            tweets_in_db_by_id = {t[0]: {'id': t[0], 'text': t[1]} for t in cursor.fetchall()}
+            tweets_in_db = list(tweets_in_db_by_id.values())
 
-        # Use different lists for the current ones and the new ones so deleted tweets preserve their text in the DB.
+        if args.cached:
+            with open(args.cached) as cached_file:
+                new_tweets = util.read_tweets(cached_file)
+        else:
+            # Use different lists for the current ones and the new ones so deleted tweets preserve their text in the DB.
+            new_tweets = []
+
+            api = util.tweepy_api()
+
+            with tqdm(total=len(tweets_in_db), desc="Downloading statuses") as progress_bar:
+                for tweet_group in util.chunks(tweets_in_db, MAX_STATUSES_COUNT_PER_STATUSES_LOOKUP):
+                    statuses = api.statuses_lookup((tweet['id'] for tweet in tweet_group), map_=False)
+                    new_tweets.extend(util.status_to_dict(status) for status in statuses)
+                    time.sleep(DELAY_PER_USER_AUTH_STATUSES_LOOKUP_REQUEST)
+                    progress_bar.update(len(tweet_group))
+
+            for tweet in new_tweets:
+                print(tweet)
+
         tweets_to_update = []
-
-        api = util.tweepy_api()
-
-        with tqdm(total=len(tweets_in_db), desc="Downloading statuses") as progress_bar:
-            for tweet_group in util.chunks(tweets_in_db, MAX_STATUSES_COUNT_PER_STATUSES_LOOKUP):
-                tweet_group_by_id = {tweet['id']: tweet for tweet in tweet_group}
-
-                statuses = api.statuses_lookup(tweet_group_by_id.keys(), map_=False)
-
-                for status in statuses:
-                    if status.text != tweet_group_by_id[status.id]['text']:
-                        print(status.text)
-                        tweets_to_update.append(util.status_to_dict(status))
-
-                time.sleep(DELAY_PER_USER_AUTH_STATUSES_LOOKUP_REQUEST)
-
-                progress_bar.update(len(tweet_group))
-
-        print('')
-        print(len(tweets_to_update), "tweets to update")
-        print('')
+        for tweet in new_tweets:
+            if tweet['text'] != tweets_in_db_by_id[tweet['id']]['text']:
+                tweets_to_update.append(tweet)
 
         with connection as cursor:
             # There is no simple way to do a batch update in MySQL. One option would be to use

@@ -1,21 +1,16 @@
 #!/usr/bin/env python
-import argparse
-import os
-
-import MySQLdb
-
 import util
 
 
-def insert_accounts(db, account_ids):
-    with db.cursor() as cursor:
+def insert_accounts(connection, account_ids):
+    with connection as cursor:
         cursor.executemany('INSERT INTO accounts (account_id) VALUES (%s)'
                            ' ON DUPLICATE KEY UPDATE account_id = account_id;',
                            account_ids)
 
 
-def insert_tweets(db, tweets):
-    with db.cursor() as cursor:
+def insert_tweets(connection, tweets):
+    with connection as cursor:
         # Consider that there are duplicate tweets in sample sometimes.
         cursor.executemany('INSERT INTO tweets (tweet_id, text, account_id, origin, lang)'
                            ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', \'es\')'
@@ -37,17 +32,17 @@ def main():
     # for tweet in tweets:
     #     tweet['lang'] = args.language
 
-    db = MySQLdb.connect(host=os.getenv('DB_HOST'), user=os.getenv('DB_USER'),
-                         password=os.getenv('MYSQL_ROOT_PASSWORD'),
-                         database=os.getenv('DB_NAME'), charset='utf8mb4')
+    connection = util.connection()
 
     try:
-        insert_accounts(db, {tweet['user_id'] for tweet in tweets})
-        insert_tweets(db, tweets)
-        db.commit()
+        insert_accounts(connection, {tweet['user_id'] for tweet in tweets})
+        insert_tweets(connection, tweets)
+        connection.commit()
     except Exception:
-        db.rollback()
+        connection.rollback()
         raise
+    finally:
+        connection.close()
 
 
 if __name__ == '__main__':

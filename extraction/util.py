@@ -2,6 +2,7 @@ import fileinput
 import os
 import re
 
+import MySQLdb
 import tweepy
 
 RE_LINK = re.compile(r'https?://')
@@ -44,14 +45,14 @@ def status_to_dict(status):
 
 
 def tweepy_api(app_only_auth=False):
-    consumer_token = os.environ.get('CONSUMER_TOKEN')
-    consumer_secret = os.environ.get('CONSUMER_SECRET')
+    consumer_token = os.environ['CONSUMER_TOKEN']
+    consumer_secret = os.environ['CONSUMER_SECRET']
 
     if app_only_auth:
         auth = tweepy.AppAuthHandler(consumer_token, consumer_secret)
     else:
-        access_token = os.environ.get('ACCESS_TOKEN')
-        access_token_secret = os.environ.get('ACCESS_TOKEN_SECRET')
+        access_token = os.environ['ACCESS_TOKEN']
+        access_token_secret = os.environ['ACCESS_TOKEN_SECRET']
         auth = tweepy.OAuthHandler(consumer_token, consumer_secret)
         auth.set_access_token(access_token, access_token_secret)
 
@@ -62,3 +63,8 @@ def chunks(l, n):
     """Yield successive n-sized chunks from l."""
     for i in range(0, len(l), n):
         yield l[i:i + n]
+
+
+def connection():
+    return MySQLdb.connect(host=os.environ['DB_HOST'], user=os.environ['DB_USER'], password=os.environ['DB_PASS'],
+                           database=os.environ['DB_NAME'], charset='utf8mb4')

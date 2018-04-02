@@ -11,7 +11,7 @@ name = "pypi"
 
 [packages]
 
-krippendorff = ">=0.2.1"
+krippendorff = ">=0.2.2"
 mysqlclient = "*"
 numpy = "*"
 tweepy = "*"

@@ -1,4 +1,4 @@
-CREATE TEMPORARY TABLE good_quality AS
+CREATE VIEW good_quality AS
 SELECT
   tweet_id, v.session_id, vote, date
 FROM votes v
@@ -34,7 +34,7 @@ SELECT
   COUNT(*) tweet_count
 FROM
   (SELECT
-     COUNT(*) votes
+     COUNT(gq.tweet_id) votes
    FROM tweets t LEFT JOIN good_quality gq on (t.tweet_id = gq.tweet_id)
    GROUP BY t.tweet_id) temp
 GROUP BY votes;

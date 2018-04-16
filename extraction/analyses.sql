@@ -1,4 +1,6 @@
-SELECT COUNT(*) FROM votes WHERE vote = 'n';
+SELECT COUNT(*)
+FROM votes
+WHERE vote = 'n';
 
 CREATE VIEW good_quality AS
   SELECT
@@ -176,3 +178,31 @@ FROM
    GROUP BY t.tweet_id) temp
 WHERE p > x
 ORDER BY funinness_average DESC;
+
+SELECT
+  AVG(funinness_average),
+  STDDEV(funinness_average)
+FROM
+  (SELECT (1 * v1 + 2 * v2 + 3 * v3 + 4 * v4 + 5 * v5) / p funinness_average
+   FROM
+     (SELECT
+        t.tweet_id,
+        text,
+        COUNT(IF(vote = 'x', 1, NULL))  x,
+        COUNT(IF(vote = '1', 1, NULL))  v1,
+        COUNT(IF(vote = '2', 1, NULL))  v2,
+        COUNT(IF(vote = '3', 1, NULL))  v3,
+        COUNT(IF(vote = '4', 1, NULL))  v4,
+        COUNT(IF(vote = '5', 1, NULL))  v5,
+        COUNT(IF(vote != 'p', 1, NULL)) p
+      FROM tweets t LEFT JOIN good_quality gq ON (t.tweet_id = gq.tweet_id)
+      GROUP BY t.tweet_id) temp
+   WHERE p > x) temp2;
+
+SELECT
+  tweet_id,
+  origin
+FROM tweets
+INTO OUTFILE '/var/lib/mysql-files/tweets.csv' FIELDS TERMINATED BY ','
+  OPTIONALLY ENCLOSED BY '"'
+  ESCAPED BY '' LINES TERMINATED BY '\n';

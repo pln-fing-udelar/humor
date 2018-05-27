@@ -139,7 +139,7 @@ FROM tweets t
                 GROUP BY session_id
                 HAVING COUNT(*) > 1000) top_sessions
 GROUP BY t.tweet_id
-INTO OUTFILE '/var/lib/mysql-files/annotations_by_tweet_top2.csv' FIELDS TERMINATED BY ','
+INTO OUTFILE '/var/lib/mysql-files/annotations_by_tweet_top.csv' FIELDS TERMINATED BY ','
   OPTIONALLY ENCLOSED BY '"'
   ESCAPED BY '' LINES TERMINATED BY '\n';
 
@@ -206,3 +206,15 @@ FROM tweets
 INTO OUTFILE '/var/lib/mysql-files/tweets.csv' FIELDS TERMINATED BY ','
   OPTIONALLY ENCLOSED BY '"'
   ESCAPED BY '' LINES TERMINATED BY '\n';
+-- Then add the CSV headers manually.
+
+SELECT
+  tweet_id,
+  session_id,
+  date,
+  vote
+FROM votes
+INTO OUTFILE '/var/lib/mysql-files/annotations.csv' FIELDS TERMINATED BY ','
+  OPTIONALLY ENCLOSED BY'"'
+  ESCAPED BY '' LINES TERMINATED BY '\n';
+-- Then add the CSV headers manually.

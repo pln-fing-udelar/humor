@@ -2,6 +2,7 @@ import fileinput
 import os
 import re
 
+# noinspection PyPackageRequirements
 import MySQLdb
 import tweepy
 

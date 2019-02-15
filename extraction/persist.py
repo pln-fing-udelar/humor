@@ -12,8 +12,10 @@ def insert_accounts(connection, account_ids):
 def insert_tweets(connection, tweets):
     with connection as cursor:
         # Consider that there are duplicate tweets in sample sometimes.
+        # Also, consider that the key names may vary between 'tweet_id' or 'id', and `account_id or 'user_id',
+        #   depending on the input file.
         cursor.executemany('INSERT INTO tweets (tweet_id, text, account_id, origin, lang)'
-                           ' VALUES (%(id)s, %(text)s, %(user_id)s, \'hose\', \'es\')'
+                           ' VALUES (%(tweet_id)s, %(text)s, %(account_id)s, %(origin)s, %(lang)s)'
                            ' ON DUPLICATE KEY UPDATE tweet_id = tweet_id',
                            tweets)
 
@@ -35,7 +37,8 @@ def main():
     connection = util.connection()
 
     try:
-        insert_accounts(connection, {tweet['user_id'] for tweet in tweets})
+        # Consider that the key name may vary between 'account_id' or 'user_id' depending on the input file.
+        insert_accounts(connection, {tweet['account_id'] for tweet in tweets})
         insert_tweets(connection, tweets)
         connection.commit()
     except Exception:

@@ -28,6 +28,7 @@ def main():
     api = util.tweepy_api()
 
     with tqdm(total=len(tweets), desc="Re-fetching tweets") as progress_bar:
+        # TODO: only re-download the ones with encoding issues. Don't touch the rest.
         for tweet_group in util.chunks(tweets, MAX_STATUSES_COUNT_PER_STATUSES_LOOKUP):
             # Consider that the key name may vary between 'tweet_id' or 'id' depending on the input file.
             queried_statuses = api.statuses_lookup((tweet['tweet_id'] for tweet in tweet_group), map_=False)
